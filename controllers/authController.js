@@ -6,6 +6,12 @@ const signupUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    if (!username || !email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please add all fields" });
+    }
+
     // Check for duplicate user
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -29,7 +35,7 @@ const signupUser = async (req, res) => {
       token: await user.generateToken(),
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -44,7 +50,7 @@ const signinUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid Email" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, userExists.password);
+    const isPasswordValid = await userExists.comparePassword(password);
 
     if (isPasswordValid) {
       res.status(200).json({
@@ -57,7 +63,7 @@ const signinUser = async (req, res) => {
       res.status(401).json({ success: false, message: "Invalid Password" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
