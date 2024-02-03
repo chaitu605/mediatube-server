@@ -29,10 +29,11 @@ const signupUser = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "User Created Successfully",
-      // data: user,
-      userId: user._id,
-      token: await user.generateToken(),
+      message: "SignUp Successfull",
+      data: {
+        userId: user._id,
+        token: await user.generateToken(),
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -56,8 +57,12 @@ const signinUser = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Signin Success",
-        userId: userExists._id,
-        token: await userExists.generateToken(),
+        data: {
+          userId: userExists._id,
+          username: userExists.username,
+          email: userExists.email,
+          token: await userExists.generateToken(),
+        },
       });
     } else {
       res.status(401).json({ success: false, message: "Invalid Password" });

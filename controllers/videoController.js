@@ -75,7 +75,6 @@ const update = async (req, res) => {
 
 //Add video
 const add = async (req, res) => {
-  console.log("user", req.user);
   try {
     const { title, description, genre, thumbnail, videoId } = req.body;
 
@@ -85,19 +84,29 @@ const add = async (req, res) => {
         .json({ success: false, message: "Please add all fields" });
     }
 
+    const cloudinaryRes = await cloudinary.uploader.upload(thumbnail, {
+      upload_preset: "OTTApp",
+      folder: "thumbnails",
+      resource_type: "image",
+    });
     const videoExists = await Video.findOne({ videoId: videoId });
-
     if (videoExists === undefined || videoExists === null) {
       const newVideo = new Video({
         title: title,
         description: description,
         genre: genre,
-        thumbnail: thumbnail,
+        thumbnail: cloudinaryRes.secure_url,
         videoId: videoId,
       });
 
       const result = await newVideo.save();
-      res.status(200).json({ success: true, data: result });
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Video added successfully",
+          data: result,
+        });
     } else {
       res.status(400).json({
         success: false,

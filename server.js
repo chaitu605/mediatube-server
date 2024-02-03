@@ -10,7 +10,13 @@ const { notFound, errorHandler } = require("./middlewares/errrorMiddleware");
 
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+let corsOptions = {
+  origin: true,
+};
+
+app.use(cors(corsOptions));
+
+app.use(express.json({ limit: "50mb" }));
 
 //Routes
 app.use("/api/auth", authRouter);
