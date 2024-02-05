@@ -21,7 +21,7 @@ router
   .put(authMiddleWare, adminMiddleWare, videoController.update);
 
 router
-  .route("/:id")
-  .delete(authMiddleWare, adminMiddleWare, videoController.deleteVid);
+  .route("/delete")
+  .post(authMiddleWare, adminMiddleWare, videoController.deleteVid);
 
 module.exports = router;

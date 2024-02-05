@@ -84,13 +84,14 @@ const add = async (req, res) => {
         .json({ success: false, message: "Please add all fields" });
     }
 
-    const cloudinaryRes = await cloudinary.uploader.upload(thumbnail, {
-      upload_preset: "OTTApp",
-      folder: "thumbnails",
-      resource_type: "image",
-    });
     const videoExists = await Video.findOne({ videoId: videoId });
     if (videoExists === undefined || videoExists === null) {
+      const cloudinaryRes = await cloudinary.uploader.upload(thumbnail, {
+        upload_preset: "OTTApp",
+        folder: "thumbnails",
+        resource_type: "image",
+      });
+
       const newVideo = new Video({
         title: title,
         description: description,
@@ -100,13 +101,11 @@ const add = async (req, res) => {
       });
 
       const result = await newVideo.save();
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Video added successfully",
-          data: result,
-        });
+      res.status(200).json({
+        success: true,
+        message: "Video added successfully",
+        data: result,
+      });
     } else {
       res.status(400).json({
         success: false,
@@ -121,11 +120,18 @@ const add = async (req, res) => {
 //Delete Video
 const deleteVid = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id, cloudinaryId } = req.body;
+
+    console.log(id, cloudinaryId);
+
+    const cloudinaryRes = await cloudinary.uploader.destroy(cloudinaryId);
+
+    console.log("cloudinaryRes", cloudinaryRes);
+
     const result = await Video.findByIdAndDelete(id);
     res.status(200).json({
       success: true,
-      message: "Data deleted successfully",
+      message: "Video deleted successfully",
       data: result,
     });
   } catch (error) {

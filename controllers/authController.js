@@ -23,7 +23,7 @@ const signupUser = async (req, res) => {
     // Create new user
     const user = await User.create({
       username,
-      email,
+      email: email.toLowerCase(),
       password,
     });
 
@@ -45,7 +45,7 @@ const signinUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: email.toLowerCase() });
 
     if (!userExists) {
       return res.status(400).json({ success: false, message: "Invalid Email" });
@@ -61,6 +61,7 @@ const signinUser = async (req, res) => {
           userId: userExists._id,
           username: userExists.username,
           email: userExists.email,
+          isAdmin: userExists.isAdmin,
           token: await userExists.generateToken(),
         },
       });

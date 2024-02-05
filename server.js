@@ -6,6 +6,8 @@ dotenv.config();
 const connectDB = require("./config/dbConfig");
 const authRouter = require("./routes/auth.routes");
 const videoRouter = require("./routes/video.routes");
+const commentRouter = require("./routes/comment.routes");
+const likeRouter = require("./routes/like.routes");
 const { notFound, errorHandler } = require("./middlewares/errrorMiddleware");
 
 const PORT = process.env.PORT || 5000;
@@ -21,6 +23,8 @@ app.use(express.json({ limit: "50mb" }));
 //Routes
 app.use("/api/auth", authRouter);
 app.use("/api/video", videoRouter);
+app.use("/api/comment", commentRouter);
+app.use("/api/like", likeRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("Mediatube server is running");
