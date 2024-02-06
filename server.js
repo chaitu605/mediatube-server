@@ -8,6 +8,7 @@ const authRouter = require("./routes/auth.routes");
 const videoRouter = require("./routes/video.routes");
 const commentRouter = require("./routes/comment.routes");
 const likeRouter = require("./routes/like.routes");
+const healthCheckRouter = require("./routes/healthCheck.route");
 const { notFound, errorHandler } = require("./middlewares/errrorMiddleware");
 
 const PORT = process.env.PORT || 5000;
@@ -26,9 +27,11 @@ app.use("/api/video", videoRouter);
 app.use("/api/comment", commentRouter);
 app.use("/api/like", likeRouter);
 
-app.get("/", (req, res) => {
-  res.status(200).send("Mediatube server is running");
-});
+// app.get("/", (req, res) => {
+//   res.status(200).send("Mediatube server is running");
+// });
+
+app.use("/", healthCheckRouter);
 
 // Global error middlewares
 app.use(notFound);
