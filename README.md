@@ -1,5 +1,8 @@
 # Mediatube Server
 
+# Deployed on Render
+- https://mediatube-server.onrender.com
+
 ## 💻 Technologies and Packages used 🛠🧰
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
