@@ -51,7 +51,35 @@ const findByGenre = async (req, res) => {
 const update = async (req, res) => {
   try {
     const id = req.params.id;
-    const updatedVideo = await Video.findByIdAndUpdate(id, req.body, {
+    const { title, description, genre, cloudinaryImgId, thumbnail, videoId } =
+      req.body;
+    if (!title || !description || !genre || !thumbnail || !videoId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please add all fields" });
+    }
+
+    const cloudinaryRes = await cloudinary.uploader.destroy(cloudinaryImgId);
+    const cloudinaryUploadRes = await cloudinary.uploader.upload(thumbnail, {
+      upload_preset: "OTTApp",
+      folder: "thumbnails",
+      resource_type: "image",
+      transformation: [
+        { crop: "scale" },
+        { quality: "auto:best" },
+        { fetch_format: "webp" },
+      ],
+    });
+
+    const updatedVideoData = {
+      title: title,
+      description: description,
+      genre: genre,
+      thumbnail: cloudinaryUploadRes.secure_url,
+      videoId: videoId,
+    };
+
+    const updatedVideo = await Video.findByIdAndUpdate(id, updatedVideoData, {
       useFindAndModify: false,
     });
     res.status(200).json({
@@ -90,6 +118,11 @@ const add = async (req, res) => {
         upload_preset: "OTTApp",
         folder: "thumbnails",
         resource_type: "image",
+        transformation: [
+          { crop: "scale" },
+          { quality: "auto:best" },
+          { fetch_format: "webp" },
+        ],
       });
 
       const newVideo = new Video({
@@ -122,11 +155,7 @@ const deleteVid = async (req, res) => {
   try {
     const { id, cloudinaryId } = req.body;
 
-    console.log(id, cloudinaryId);
-
     const cloudinaryRes = await cloudinary.uploader.destroy(cloudinaryId);
-
-    console.log("cloudinaryRes", cloudinaryRes);
 
     const result = await Video.findByIdAndDelete(id);
     res.status(200).json({
